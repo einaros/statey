@@ -22,6 +22,39 @@ module.exports = {
         ], 'new', 42);
         assert.ok(activateCalled);
     },
+    'no startstate causes initially stopped machine': function() {
+        var activateCalled = false;
+        var machine = statey.build({
+                clients: []
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    activateCalled = true;
+                },
+                deactivate: function(myState) {
+                },
+            }
+        ]);
+        assert.ok(!activateCalled);
+    },
+    'initially stopped machine can be started with parameter': function() {
+        var activateCalled = false;
+        var machine = statey.build({
+                clients: []
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    activateCalled = data == 42;
+                },
+                deactivate: function(myState) {
+                },
+            }
+        ]);
+        machine.enter('new', 42);
+        assert.ok(activateCalled);
+    },
     'global state is accessible': function() {
         var activateCalled = false;
         var machine = statey.build({

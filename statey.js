@@ -18,9 +18,17 @@ module.exports = {
                 state[name] = api[name];
             }
         });
-        var startState = stateMap[start];
-        var args = Array.prototype.slice.call(arguments, 3);
-        startState.activate.apply(startState, args);
+        states.enter = function(stateName) {
+            var startState = stateMap[stateName];
+            if (typeof startState == 'undefined') {
+                throw 'invalid state name';
+            }
+            startState.activate.apply(startState, Array.prototype.slice.call(arguments, 1));
+        }
+        if (arguments.length > 2) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            states.enter.apply(this, args);
+        }
         return states;
     }
 }
