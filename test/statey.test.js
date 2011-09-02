@@ -1,0 +1,73 @@
+var assert = require('assert'); 
+var EventEmitter = require('events').EventEmitter;
+var statey = require('../statey');
+
+var Socket = function() {}
+Socket.prototype.__proto__ = EventEmitter.prototype;
+
+module.exports = {
+    'can activate with parameter': function() {
+        var activateCalled = false;
+        var machine = statey.build({
+                clients: []
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    activateCalled = data == 42;
+                },
+                deactivate: function(myState) {
+                },
+            }
+        ], 'new', 42);
+        assert.ok(activateCalled);
+    },
+    'can goto state': function() {
+        var socket = new Socket();
+        var gotoCalled = false;
+        var machine = statey.build({
+                clients: []
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    this.goto('authenticated', 42);
+                },
+                deactivate: function(params) {
+                },
+            }, {
+                name: 'authenticated',
+                activate: function(params) {
+                    gotoCalled = params == 42;
+                },
+                deactivate: function() {
+                },
+            }
+        ], 'new', socket);
+        assert.ok(gotoCalled);
+    },
+    'goto triggers deactivate': function() {
+        var socket = new Socket();
+        var gotoCalled = false;
+        var machine = statey.build({
+                clients: []
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    this.goto('authenticated', 42);
+                },
+                deactivate: function(params) {
+                    gotoCalled = params == 42;
+                },
+            }, {
+                name: 'authenticated',
+                activate: function(params) {
+                },
+                deactivate: function() {
+                },
+            }
+        ], 'new', socket);
+        assert.ok(gotoCalled);
+    },
+}

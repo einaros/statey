@@ -1,0 +1,12 @@
+{ 
+    "name": "statey",
+    "version": "0.0.1",
+    "description": "",
+    "author": "Einar Otto Stangvik <einaros@gmail.com>",
+    "repository": "",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "expresso": "0.x"
+    }
+}
