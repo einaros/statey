@@ -22,6 +22,22 @@ module.exports = {
         ], 'new', 42);
         assert.ok(activateCalled);
     },
+    'global state is accessible': function() {
+        var activateCalled = false;
+        var machine = statey.build({
+                ok: 1
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    activateCalled = this.global.ok === 1;
+                },
+                deactivate: function(myState) {
+                },
+            }
+        ], 'new', 42);
+        assert.ok(activateCalled);
+    },
     'can goto state': function() {
         var socket = new Socket();
         var gotoCalled = false;
