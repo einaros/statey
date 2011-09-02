@@ -119,4 +119,22 @@ module.exports = {
         ], 'new', socket);
         assert.ok(gotoCalled);
     },
+    'terminate triggers deactivate': function() {
+        var socket = new Socket();
+        var gotoCalled = false;
+        var machine = statey.build({
+                clients: []
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    this.terminate(42);
+                },
+                deactivate: function(params) {
+                    gotoCalled = params == 42;
+                },
+            }
+        ], 'new', socket);
+        assert.ok(gotoCalled);
+    },
 }

@@ -5,10 +5,13 @@ module.exports = {
             goto: function(stateName, userState) {
                 this.deactivate(userState);
                 var targetState = stateMap[stateName];
-                if (typeof targetState == 'undefine') {
+                if (typeof targetState == 'undefined') {
                     throw 'invalid state name';
                 }
                 targetState.activate(userState);
+            },
+            terminate: function(userState) {
+                this.deactivate(userState);
             }
         }
         states.forEach(function(state) {
