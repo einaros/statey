@@ -1,7 +1,7 @@
 var assert = require('assert'); 
 var EventEmitter = require('events').EventEmitter;
 var statey = require('../statey');
-require('should');
+var should = require('should');
 
 var Socket = function() {}
 Socket.prototype.__proto__ = EventEmitter.prototype;
@@ -172,5 +172,43 @@ module.exports = {
         }
         catch(e) {}
         machine.count().should.equal(0);
+    },
+    'machine can automatically unsubscribe event listeners hooked up during activate': function() {
+        var socket = new Socket();
+        var machine = statey.build({},
+            [{
+                name: 'new',
+                activate: function(socket) {
+                    this.recordListeners(socket, function() {
+                        socket.on('test', this.terminate.bind(this));
+                    });
+                },
+                deactivate: function(params) {
+                },
+            }
+        ], 'new');
+        machine.start(socket);
+        socket.listeners('test').length.should.equal(1);
+        socket.emit('test');
+        socket.listeners('test').length.should.equal(0);
+    },
+    'two executions of the same machine will work on separate object instances': function() {
+        var socket = new Socket();
+        var machine = statey.build({},
+            [{
+                name: 'new',
+                activate: function(socket) {
+                    socket.on('test', (function() {
+                        should.not.exist(this.x);
+                        this.x = 1;
+                    }.bind(this)));
+                },
+                deactivate: function(params) {
+                },
+            }
+        ], 'new');
+        machine.start(socket);
+        machine.start(socket);
+        socket.emit('test');
     },
 }
