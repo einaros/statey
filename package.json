@@ -7,6 +7,7 @@
     "dependencies": {
     },
     "devDependencies": {
-        "expresso": "0.x"
+        "expresso": "0.x",
+        "should": "0.x"
     }
 }

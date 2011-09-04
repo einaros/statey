@@ -1,6 +1,10 @@
 module.exports = {
-    build: function(global, states, start) {
+    build: function(global, states, startStateName) {        
         var stateMap = {};
+        
+        var machineState = {
+            activeClients: 0
+        }
         
         var stateApi = {
             goto: function(stateName, userState) {
@@ -12,7 +16,13 @@ module.exports = {
                 targetState.activate(userState);
             },
             terminate: function(userState) {
-                this.deactivate(userState);
+                try {
+                    this.deactivate(userState);
+                }
+                finally
+                {
+                    machineState.activeClients -= 1;                    
+                }
             }
         }
         
@@ -23,20 +33,25 @@ module.exports = {
                 state[name] = stateApi[name];
             }
         });
-        
+
+        if (typeof startStateName != 'string' || stateMap[startStateName] == null) throw 'invalid start state';
+
         var machine = {
-          enter: function(stateName) {
-              var startState = stateMap[stateName];
-              if (typeof startState == 'undefined') {
-                  throw 'invalid state name';
+          start: function() {
+              try {
+                  var startState = stateMap[startStateName];
+                  machineState.activeClients += 1;
+                  startState.activate.apply(startState, arguments);                  
               }
-              startState.activate.apply(startState, Array.prototype.slice.call(arguments, 1));
+              catch (e) {
+                  machineState.activeClients -= 1;
+                  throw e;
+              }
+              return this;
+          },
+          count: function() {
+              return machineState.activeClients;
           }
-        }
-        
-        if (arguments.length > 2) {
-            var args = Array.prototype.slice.call(arguments, 2);
-            machine.enter.apply(this, args);
         }
         return machine;
     }
