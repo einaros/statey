@@ -44,7 +44,7 @@ module.exports = {
         }
         exceptionThrown.should.be.ok;
     },
-    'initially stopped machine can be started with parameter': function() {
+    'machine can be started with parameter': function() {
         var activateCalled = false;
         var machine = statey.build({
                 clients: []
@@ -61,21 +61,21 @@ module.exports = {
         machine.start(42);
         activateCalled.should.be.ok;
     },
-    'global state is accessible': function() {
-        var activateCalled = false;
-        var machine = statey.build({
-                ok: 1
-            },
+    'global state is shared between all executions of a machine': function() {
+        var global = {
+            value: 0
+        }
+        var machine = statey.build(global,
             [{
                 name: 'new',
                 activate: function(data) {
-                    activateCalled = this.global.ok === 1;
+                    this.global.value++;
                 },
                 deactivate: function(myState) {
                 },
             }
-        ], 'new').start(42);
-        activateCalled.should.be.ok;
+        ], 'new').start(42).start(42);
+        global.value.should.equal(2);
     },
     'can goto state': function() {
         var gotoCalled = false;
