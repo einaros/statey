@@ -100,6 +100,32 @@ module.exports = {
         ], 'new').start();
         gotoCalled.should.be.ok;
     },
+    'goto passes multiple parameters': function() {
+        var gotoCalled = false;
+        var machine = statey.build({
+                clients: []
+            },
+            [{
+                name: 'new',
+                activate: function(data) {
+                    this.goto('authenticated', 4, 3, 2, 1);
+                },
+                deactivate: function(params) {
+                },
+            }, {
+                name: 'authenticated',
+                activate: function(a, b, c, d) {
+                    gotoCalled = a == 4 &&
+                                 b == 3 &&
+                                 c == 2 &&
+                                 d == 1;
+                },
+                deactivate: function() {
+                },
+            }
+        ], 'new').start();
+        gotoCalled.should.be.ok;
+    },
     'goto triggers deactivate': function() {
         var gotoCalled = false;
         var machine = statey.build({
