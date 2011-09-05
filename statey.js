@@ -36,14 +36,16 @@ module.exports = {
         
         // mixin api accessible by the states
         var stateApi = {
-            goto: function(stateName, userState) {
-                this.deactivate(userState);
+            // goto another state, and pass all arguments to deactivate + other state
+            goto: function(stateName) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                this.deactivate.apply(this, args);
                 removeStateListeners(this);
                 var targetState = this.machine.states[stateName];
                 if (typeof targetState == 'undefined') {
                     throw 'invalid state name';
                 }
-                targetState.activate(userState);
+                targetState.activate.apply(this, args);
             },
             terminate: function(userState) {
                 try {
