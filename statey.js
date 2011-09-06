@@ -45,11 +45,11 @@ module.exports = {
                 if (typeof targetState == 'undefined') {
                     throw 'invalid state name';
                 }
-                targetState.activate.apply(this, args);
+                targetState.activate.apply(targetState, args);
             },
-            terminate: function(userState) {
+            terminate: function() {
                 try {
-                    this.deactivate(userState);
+                    this.deactivate.apply(this, arguments);
                     removeStateListeners(this);
                 }
                 finally
