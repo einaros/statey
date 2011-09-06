@@ -128,15 +128,18 @@ module.exports = {
     },
     'goto triggers deactivate': function() {
         var gotoCalled = false;
+        var paramOk = false;
         var machine = statey.build({
                 clients: []
             },
             [{
                 name: 'new',
                 activate: function(data) {
+                    this.check = 1;
                     this.goto('authenticated', 42);
                 },
                 deactivate: function(params) {
+                    paramOk = this.check == 1;
                     gotoCalled = params == 42;
                 },
             }, {
@@ -147,6 +150,7 @@ module.exports = {
                 },
             }
         ], 'new').start();
+        paramOk.should.be.ok;
         gotoCalled.should.be.ok;
     },
     'terminate triggers deactivate': function() {
