@@ -106,7 +106,7 @@ module.exports = {
         });            
 
         // detect error in start state
-        if (typeof startStateName != 'string' || foundStartState == false) throw 'invalid start state';
+        if (typeof startStateName != 'string' || foundStartState == false) throw 'invalid start state';
 
         // machine API
         var machineApi = {
